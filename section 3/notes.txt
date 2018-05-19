@@ -17,3 +17,10 @@ npm update - only applies to same major release
 sudo npm i -g npm-check-updates --tool to check updates
 npm-check-updates
 ncu -u [updates package.json still need to run install]
+
+jshint
+
+npm
+ng
+
+sudo npm i -g npm [upgrades]
