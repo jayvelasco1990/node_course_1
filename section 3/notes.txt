@@ -1,0 +1,19 @@
+//major.minor.patch 4.13.7 for bugs, 4.14.0, increase the version, keep API, 5.0.0 breaking API, Semantic versioning, SemVer
+//~ is interested in any version as long as its 1 major version and minor is 8, 1.8.x
+//1.8.4 - make fix, but breaks something else
+//use exact same version in production
+
+npm list
+npm list --depth=0
+npm view mongoose
+npm view mongoose dependencies
+npm view mongoose versions
+
+npm i mongoose@2.4.2 - specific version
+npm i underscore@1.4.0
+
+npm outdated
+npm update - only applies to same major release
+sudo npm i -g npm-check-updates --tool to check updates
+npm-check-updates
+ncu -u [updates package.json still need to run install]
