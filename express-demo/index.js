@@ -1,3 +1,7 @@
+const morgan = require('morgan')
+
+const helmet = require('helmet')
+
 const Joi = require('joi')
 
 const logger = require('./logger')
@@ -13,6 +17,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true })) //key=value&key=value (req.body)
 
 app.use(express.static('public'))
+
+app.use(helmet())
+
+if(app.get('env') === 'development') {
+	app.use(morgan('tiny'))
+	console.log('Morgan enabled...')
+}
 
 app.use(logger)
 
