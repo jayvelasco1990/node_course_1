@@ -1,3 +1,5 @@
+const debug = require('debug')('app:startup')
+
 const morgan = require('morgan')
 
 const config = require('config')
@@ -13,6 +15,10 @@ const authenticator = require('./authenticator')
 const express = require('express')
 
 const app = express()
+
+app.set('view engine', 'pug')
+
+app.set('views', './views') //default
 
 app.use(express.json())
 
@@ -31,8 +37,8 @@ console.log('Mail Password: ' + config.get('mail.password'))
 
 if(app.get('env') === 'development') {
 	app.use(morgan('tiny'))
-	console.log('Morgan enabled...')
-}
+	debug('Morgan enabled...')
+} 
 
 app.use(logger)
 
@@ -45,7 +51,7 @@ const courses = [
 ]
 
 app.get('/', (req, res)=> {
-	res.send('Hello World!!!')
+	res.render('index', { title: 'My Express App', message: 'Hello'})
 })
 
 app.get('/api/courses', (req, res) => {
