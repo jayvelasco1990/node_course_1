@@ -71,5 +71,17 @@ async function getCourses() {
 	console.log(courses)
 }
 
+async function updateCourse(id) {
+	//Approach: query first
+	//find by id
+	//modify its properties
+	//save
+
+	//Approach: update first
+	//update directly
+	//optionally: get the updated document
+}
+
+updateCourse()
 
 getCourses() 
