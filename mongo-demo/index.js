@@ -44,15 +44,29 @@ async function getCourses() {
 	// .find({ price: { $in: [10, 15, 20] } })
 	//or
 	//and
+	// .find({ author: 'Mosh', isPublished: true})
+	// .find()
+	// .or([{ author: 'Mosh'}, { isPublished: true } ])
+	// .and([])
+	//starts with mosh
+	// .find({ author: /^Mosh/ })
+	//ends with Hamedani
+	// .find({ author: /Hamedani$/i })
+	//contains mosh
+	//.find({ author: /.*Mosh.*/i})
+	//.count()
 
-	const courses = await Course
-		// .find({ author: 'Mosh', isPublished: true})
-		.find()
-		.or([{ author: 'Mosh'}, { isPublished: true } ])
-		.and([])
-		.limit(10)
+	const pageNumber = 2
+	const pageSize = 10
+
+	//api/courses?pageNumber=2&pageSize=10
+
+	const courses = await Course		
+		.find({ author: 'Mosh', isPublished: true })
+		.skip((pageNumber - 1) * pageSize)
+		.limit(pageSize)
 		.sort({ name: 1})
-		.select({ name: 1, tags: 1 })
+		.select({ name: 1, tags: 1})
 
 	console.log(courses)
 }
