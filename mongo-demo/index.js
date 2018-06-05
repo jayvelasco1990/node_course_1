@@ -72,30 +72,24 @@ async function getCourses() {
 }
 
 async function updateCourse(id) {
-	//Approach: query first
-	//find by id
-	//modify its properties
-	//save
 
-	//Approach: update first
-	//update directly
-	//optionally: get the updated document
-	const course = await Course.findById(id)
+	const course = await Course.findByIdAndUpdate( { _id: id }, {
+		$set: {
+			author: 'Jason',
+			isPublished: false
+		}
+	}, { new: true})
 
-	if(!course) return;
-
-	if (course.isPublished) return;
-
-	course.set({
-		isPublished: true,
-		author: 'Another Author'
-	})
-
-	const result = await course.save()
-
-	console.log(result)
+	console.log(course)
 }
 
-updateCourse('5b1212320ebd15d19c18f3b5')
+async function removeCourse(id) {
+
+	// const result = await Course.deleteMany({ _id: id })
+	const course = await Course.findByIdAndRemove(id)
+	console.log(course)
+}
+
+removeCourse('5b1212320ebd15d19c18f3b5')
 
 // getCourses() 
