@@ -15,17 +15,36 @@ const courseSchema = new mongoose.Schema({
 	category: {
 		type: String,
 		required: true,
-		enum: ['web', 'mobile', 'network']
+		enum: ['web', 'mobile', 'network'],
+		lowercase: true,
+		// uppercase: true,
+		trim: true
 	},
 	author: String,
-	tags: [String],
+	tags: { 
+		type: Array,
+		validate: {
+			isAsync: true,
+			validator: function(v, callback) {
+				setTimeout(() => {
+					//Do some work
+					const result = v && v.length > 0
+
+					callback(result)
+				}, 4000)
+			},
+			message: 'A course should have at least 1 tag'
+		}
+	},
 	date: { type: Date, default: Date.now },
 	isPublished: Boolean,
 	price: {
 		type: Number,
 		required: function() { return this.isPublished },
 		min: 10,
-		max: 200
+		max: 200,
+		get: v => Math.round(v),
+		set: v => Math.round(v)
 	}
 })
 
@@ -39,10 +58,10 @@ async function createCourse() {
 	const course = new Course({
 		name: 'Angular Course',
 		author: 'Mosh',
-		tags: ['angular', 'frontend'],
+		tags: ['frontend'],
 		isPublished: true,
-		category: '-',
-		price: 15
+		category: 'Web',
+		price: 15.8
 	})
 	
 	try {
@@ -52,7 +71,9 @@ async function createCourse() {
 		console.log(result)
 	}
 	catch (ex) {
-		console.log(ex.message)
+		for ( field in ex.errors ){
+			console.log(ex.errors[field].message)
+		}
 	}
 }
 
@@ -87,13 +108,13 @@ async function getCourses() {
 	//api/courses?pageNumber=2&pageSize=10
 
 	const courses = await Course		
-		.find({ author: 'Mosh', isPublished: true })
-		.skip((pageNumber - 1) * pageSize)
-		.limit(pageSize)
+		.find({ _id: '5b189b064545e7568e66bdb6' })
+		// .skip((pageNumber - 1) * pageSize)
+		// .limit(pageSize)
 		.sort({ name: 1})
-		.select({ name: 1, tags: 1})
+		.select({ name: 1, tags: 1, price: 1})
 
-	console.log(courses)
+	console.log(courses[0].price)
 }
 
 async function updateCourse(id) {
@@ -115,8 +136,8 @@ async function removeCourse(id) {
 	console.log(course)
 }
 
-createCourse()
+// createCourse()
 
 // removeCourse('5b1212320ebd15d19c18f3b5')
 
-// getCourses() 
+getCourses() 
