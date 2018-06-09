@@ -63,18 +63,13 @@ router.put('/:id', (req, res) => {
 
 	if (error) return res.status(400).send(error.details[0].message)
 
-	const genre = await Genre.findByIdAndUpdate({id: req.params.id}, {
-		$set: {
-			genre: req.body.genre
-		}
-	}, { new: true })
-
+	const genre = updateGenre(req.params.id)
 	
 	res.send(genre)
 })
 
 router.delete('/:id', (req, res) => {
-	const genre = genres.find(g => g.id === parseInt(req.params.id))
+	const genre = deleteGenre(req.params.id)
 
 	if(!genre) return res.status(404).send('Genre does not exist.')
 
@@ -84,6 +79,24 @@ router.delete('/:id', (req, res) => {
 
 	res.send(genre)
 })
+
+async function saveGenre(genre) {
+
+}
+
+async function updateGenre(id) {
+	const genre = await Genre.findByIdAndUpdate({_id: id}, {
+		$set: {
+			genre: req.body.genre
+		}
+	}, { new: true })
+
+	return genre
+}
+
+async function deleteGenre(id) {
+	return await Genre.findByIdAndRemove(id)
+}
 
 function validateGenre(genre) {
 	const schema = {
