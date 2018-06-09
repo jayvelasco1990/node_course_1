@@ -1,5 +1,7 @@
 const express = require('express')
 
+const Joi = require('joi')
+
 const router = express.Router()
 
 const mongoose = require('mongoose')
@@ -9,23 +11,19 @@ mongoose.connect('mongodb://localhost/genres')
 	.catch(err => console.log('could not connect', err))
 
 const genreSchema = new mongoose.Schema({
-	id: Number,
 	genre: String
 })
 
 const Genre = mongoose.model('Genre', genreSchema)
-// const genres = [
-// 	{ id: 1, genre: 'comedy' }
-// ]
 
 router.get('/', (req, res) => {
-	const genres = await Genre.find()
+	const genres = getGenres()
 
 	res.send(genres)
 })
 
 router.get('/:id', (req, res) => {
-	const genre = await Genre.findOne({ id: req.params.id})
+	const genre = getGenre(req.params.id)
 
 	if(!genre) return res.status(404).send('Genre does not exist.')
 
@@ -37,15 +35,9 @@ router.post('/', (req, res) => {
 
 	if (error) return res.status(400).send(error.details[0].message)
 
-	const genre = new Genre({
-		id: genres.length + 1,
-		genre: req.body.genre
-	})
-
 	try{
-		const genre = await genre.save()
-
-		res.send(genre)
+		
+		saveGenre(req.body.genre).then((result)=> res.send(result))
 	}
 	catch(ex) {
 		for (field in ex.errors) {
@@ -55,7 +47,6 @@ router.post('/', (req, res) => {
 })
 
 router.put('/:id', (req, res) => {
-	const genre = genres.find(g => g.id === parseInt(req.params.id))
 
 	if(!genre) return res.status(404).send('Genre does not exist.')
 
@@ -80,8 +71,27 @@ router.delete('/:id', (req, res) => {
 	res.send(genre)
 })
 
-async function saveGenre(genre) {
+async function getGenres() {
+	const genres = await Genre.find()
 
+	return genres
+}
+
+async function getGenre(id) {
+	const genre = await Genre.findOne({ _id: id})
+
+	return genre
+}
+
+async function saveGenre(genre) {
+	
+	const newGenre = new Genre({
+		genre: genre
+	})
+
+	const result = await newGenre.save()
+	console.log(result)
+	return result
 }
 
 async function updateGenre(id) {

@@ -78,39 +78,13 @@ async function createCourse() {
 }
 
 async function getCourses() {
-	//eq (equal)
-	//ne (not equal)
-	//gt (greater than)
-	//gte (greater than or equal to)
-	//lt (less than)
-	//lte (less than or equal to)
-	//in
-	//nin (not in)
-	// .find({price: { $gte: 10, $lte: 20 } })
-	// .find({ price: { $in: [10, 15, 20] } })
-	//or
-	//and
-	// .find({ author: 'Mosh', isPublished: true})
-	// .find()
-	// .or([{ author: 'Mosh'}, { isPublished: true } ])
-	// .and([])
-	//starts with mosh
-	// .find({ author: /^Mosh/ })
-	//ends with Hamedani
-	// .find({ author: /Hamedani$/i })
-	//contains mosh
-	//.find({ author: /.*Mosh.*/i})
-	//.count()
-
+	
 	const pageNumber = 2
 	const pageSize = 10
 
-	//api/courses?pageNumber=2&pageSize=10
 
 	const courses = await Course		
 		.find({ _id: '5b189b064545e7568e66bdb6' })
-		// .skip((pageNumber - 1) * pageSize)
-		// .limit(pageSize)
 		.sort({ name: 1})
 		.select({ name: 1, tags: 1, price: 1})
 
