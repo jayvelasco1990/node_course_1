@@ -17,17 +17,16 @@ const genreSchema = new mongoose.Schema({
 const Genre = mongoose.model('Genre', genreSchema)
 
 router.get('/', (req, res) => {
-	const genres = getGenres()
-
-	res.send(genres)
+	getGenres().then(result => res.send(result))
 })
 
 router.get('/:id', (req, res) => {
-	const genre = getGenre(req.params.id)
+	getGenre(req.params.id)
+	.then(genre => {
+		if(!genre) return res.status(404).send('Genre does not exist.')
 
-	if(!genre) return res.status(404).send('Genre does not exist.')
-
-	res.send(genre)
+		res.send(genre)
+	})
 })
 
 router.post('/', (req, res) => {
@@ -48,27 +47,30 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
 
-	if(!genre) return res.status(404).send('Genre does not exist.')
+	updateGenre(req)
+	.then((genre)=>{
 
-	const { error } = validateGenre(req.body)
+		if(!genre) return res.status(404).send('Genre does not exist.')
 
-	if (error) return res.status(400).send(error.details[0].message)
+		const { error } = validateGenre(req.body)
 
-	const genre = updateGenre(req.params.id)
+		if (error) return res.status(400).send(error.details[0].message)
+
+		res.send(genre)
+	})
+	.catch((err)=>{
+		return res.status(400).send(err.message)
+	})
 	
-	res.send(genre)
 })
 
 router.delete('/:id', (req, res) => {
-	const genre = deleteGenre(req.params.id)
-
-	if(!genre) return res.status(404).send('Genre does not exist.')
-
-	var index = genres.indexOf(genre)
-
-	genres.splice(index, 1)
-
-	res.send(genre)
+	deleteGenre(req.params.id)
+	.then((genre)=>{
+		if(!genre) return res.status(404).send('Genre does not exist.')
+			
+		res.send(genre)
+	})
 })
 
 async function getGenres() {
@@ -94,7 +96,9 @@ async function saveGenre(genre) {
 	return result
 }
 
-async function updateGenre(id) {
+async function updateGenre(req) {
+	const id = req.params.id
+
 	const genre = await Genre.findByIdAndUpdate({_id: id}, {
 		$set: {
 			genre: req.body.genre
