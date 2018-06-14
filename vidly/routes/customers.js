@@ -1,18 +1,10 @@
-const mongoose = require('mongoose')
-
 const express = require('express')
 
-const Joi = require('joi')
+const mongoose = require('mongoose')
 
 const router = express.Router()
 
-const customersSchema = new mongoose.Schema({
-	isGold: Boolean,
-	name: String,
-	phone: String
-})
-
-const Customer = mongoose.model('Customer', customersSchema)
+const { Customer, validate } = require('../models/customer')
 
 router.get('/', async (req, res) => {
 	const customers = await Customer.find().sort('name')
@@ -21,6 +13,11 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+
+	const { error } = validate(req.body)
+
+	if (error) return res.status(404).send(error.details[0].message)
+
 	try{
 		let customer = new Customer({
 			isGold: req.body.isGold,
