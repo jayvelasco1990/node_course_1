@@ -6,7 +6,10 @@ const { genreSchema } = require('./genre')
 
 const movieSchema = new mongoose.Schema({
 	title: String,
-	genre: genreSchema,
+	genre: {
+		type: mongoose.Schema.Types.ObjectId,
+	    ref: 'Genre'
+	},
 	numberInStock: Number,
 	dailyRentalRate: Number
 })
