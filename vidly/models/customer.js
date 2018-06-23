@@ -30,7 +30,7 @@ function validateCustomer(customer) {
 		isGold: Joi.boolean()
 	}
 
-	return Joi.validate(genre, schema)
+	return Joi.validate(customer, schema)
 }
 
 exports.Customer = Customer

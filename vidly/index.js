@@ -6,6 +6,8 @@ const customers = require('./routes/customers')
 
 const movies = require('./routes/movies')
 
+const rentals = require('./routes/rentals')
+
 const express = require('express')
 
 const app = express()
@@ -21,6 +23,8 @@ app.use('/api/genres', genres)
 app.use('/api/customers', customers)
 
 app.use('/api/movies', movies)
+
+app.use('/api/rentals', rentals)
 
 app.get('/', (req, res) => {
 	return res.send('Genre App')
