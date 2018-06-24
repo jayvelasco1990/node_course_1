@@ -4,12 +4,25 @@ const router = express.Router()
 
 const { Rental, validate } = require('../models/rental')
 
+const Fawn = require('fawn')
+
+const mongoose = require('mongoose')
+
+const { Movie } = require('../models/movie')
+
+Fawn.init(mongoose)
+
 router.get('/', async (req, res) => {
 
 	const rentals = await Rental.find()
-	.populate('genre')
 	.populate('customer')
-	.populate('movie')
+	.populate({
+		path: 'movie',
+		populate: {
+			path: 'genre',
+			model: 'Genre'
+		}
+	})
 
 	res.send(rentals)
 })
@@ -21,6 +34,13 @@ router.post('/', async (req, res) => {
 	if (error) return res.status(404).send(error.details[0].message + ' bad model')
 
 	try{
+
+		const movie = await Movie.findById(req.body.movie)
+
+		if (!movie) return res.status(404).send('movie does not exist')
+
+		if (movie.numberInStock == 0) return res.status(404).send('out of movies')
+
 		let rental = new Rental({
 			movie: req.body.movie,
 			genre: req.body.genre,
@@ -30,14 +50,20 @@ router.post('/', async (req, res) => {
 			rentalFee: req.body.rentalFee
 		})
 
-		rental = await rental.save()
-
-		if (!rental) return res.status(404).send('failed to save rental')
+		new Fawn.Task()
+			.save('rentals', rental)
+			.update('movies', { _id: movie._id }, {
+				$inc: { numberInStock: -1}
+			})
+			.run()
 
 		res.send(rental)
 	}
 	catch(ex) {
+		console.log(ex)
 		for (field in ex.errors) ex.errors[field].message
+
+		res.status(500).send('failed to save')
 	}
 })
 
