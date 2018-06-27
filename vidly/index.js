@@ -10,6 +10,10 @@ const rentals = require('./routes/rentals')
 
 const express = require('express')
 
+const Joi = require('joi')
+
+Joi.objectId = require('joi-objectid')(Joi)
+
 const app = express()
 
 mongoose.connect('mongodb://localhost/vidly')

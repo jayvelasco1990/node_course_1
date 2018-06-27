@@ -17,14 +17,14 @@ router.post('/', async (req, res) => {
 	if (error) return res.status(404).send(error.details[0].message + ' bad model')
 
 	try {
-		let movie = new Movie({
+		const movie = new Movie({
 			title: req.body.title,
 			genre: req.body.genreId,
 			numberInStock: req.body.numberInStock,
 			dailyRentalRate: req.body.dailyRentalRate
 		})
 
-		movie = await movie.save()
+		await movie.save()
 
 		if (!movie) return res.status(404).send('movie does not exist')
 
