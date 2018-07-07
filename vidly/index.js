@@ -14,6 +14,8 @@ const express = require('express')
 
 const Joi = require('joi')
 
+const auth = require('./routes/auth')
+
 Joi.objectId = require('joi-objectid')(Joi)
 
 const app = express()
@@ -33,6 +35,8 @@ app.use('/api/movies', movies)
 app.use('/api/rentals', rentals)
 
 app.use('/api/users', users)
+
+app.use('/api/auth', auth)
 
 app.get('/', (req, res) => {
 	return res.send('Genre App')
