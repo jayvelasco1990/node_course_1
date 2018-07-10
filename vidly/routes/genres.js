@@ -36,7 +36,7 @@ router.post('/', auth, async (req, res) => {
 
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 
 	const { error } = validate(req.body)
 
@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
 	
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
 
 	const genre = await Genre.findByIdAndRemove(req.params.id)
 

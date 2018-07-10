@@ -2,6 +2,8 @@ const express = require('express')
 
 const router = express.Router()
 
+const auth = require('../middleware/auth')
+
 const { Customer, validate } = require('../models/customer')
 
 router.get('/', async (req, res) => {
@@ -10,7 +12,7 @@ router.get('/', async (req, res) => {
 	res.send(customers)
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
 	const { error } = validate(req.body)
 
@@ -36,7 +38,7 @@ router.post('/', async (req, res) => {
 	}
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 	const customer = await Customer.findByIdAndUpdate(req.params.id, {
 		$set: {
 			isGold: req.body.isGold,
@@ -50,7 +52,7 @@ router.put('/:id', async (req, res) => {
 	res.send(customer)
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
 	const customer = await Customer.findByIdAndRemove(req.params.id)
 
 	if (!customer) return res.status(404).send('customer does not exist')

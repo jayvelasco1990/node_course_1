@@ -6,6 +6,8 @@ const router = express.Router()
 
 const bcrypt = require('bcrypt')
 
+const auth = require('../middleware/auth')
+
 const { User, validate } = require('../models/user')
 
 router.get('/', async (req, res) => {
@@ -16,7 +18,7 @@ router.get('/', async (req, res) => {
 
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 	const { error } = validate(req.body)
 
 	if (error) return res.status(400).send(error.details[0].message)
@@ -50,7 +52,7 @@ router.post('/', async (req, res) => {
 })
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 
 	const { error } = validate(req.body)
 
@@ -70,7 +72,7 @@ router.put('/:id', async (req, res) => {
 
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
 
 	const user = await User.findByIdAndRemove(req.params.id)
 

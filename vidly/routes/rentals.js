@@ -4,6 +4,8 @@ const router = express.Router()
 
 const { Rental, validate } = require('../models/rental')
 
+const auth = require('../middleware/auth')
+
 const Fawn = require('fawn')
 
 const mongoose = require('mongoose')
@@ -27,7 +29,7 @@ router.get('/', async (req, res) => {
 	res.send(rentals)
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
 	const { error } = validate(req.body)
 
@@ -67,7 +69,7 @@ router.post('/', async (req, res) => {
 	}
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 
 	const rental = await Rental.findByIdAndUpdate(req.params.id, {
 		$set: {
@@ -85,7 +87,7 @@ router.put('/:id', async (req, res) => {
 	res.send(rental)
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
 
 	const rental = await Rental.findByIdAndRemove(req.params.id)
 
