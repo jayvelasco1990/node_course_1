@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
 })
 
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
 	const { error } = validate(req.body)
 
 	if (error) return res.status(400).send(error.details[0].message)
@@ -82,10 +82,9 @@ router.delete('/:id', auth, async (req, res) => {
 
 })
 
-router.get('/:id', async (req, res) => {
-	const user = await User.findById(req.params.id)
+router.get('/me', auth, async (req, res) => {
 
-	if (!user) return res.status(404).send('User does not exist')
+	const user = await User.findById(req.user._id).select('-password')
 
 	res.send(user)
 
