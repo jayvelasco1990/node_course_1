@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 
+const error = require('./middleware/error')
+
 const config = require('config')
 
 const genres = require('./routes/genres')
@@ -44,6 +46,8 @@ app.use('/api/rentals', rentals)
 app.use('/api/users', users)
 
 app.use('/api/auth', auth)
+
+app.use(error)
 
 app.get('/', (req, res) => {
 	return res.send('Genre App')
