@@ -2,6 +2,8 @@ require('express-async-errors')
 
 const winston = require('winston')
 
+require('winston-mongodb')
+
 const mongoose = require('mongoose')
 
 const error = require('./middleware/error')
@@ -28,7 +30,24 @@ Joi.objectId = require('joi-objectid')(Joi)
 
 const app = express()
 
+winston.handleExceptions(new winston.transports.File({
+	filename: 'uncaughtExceptions.log'
+}))
+
+process.on('unhandledRejection', (ex) => {
+	throw ex
+})
+
 winston.add(winston.transports.File, { filename: 'logfile.log'})
+
+winston.add(winston.transports.MongoDB, { 
+	db: 'mongodb://localhost/vidly',
+	level: 'info'
+})
+
+const p = Promise.reject(new Error('something failed miserably'))
+
+p.then(() => console.log('Done'))
 
 if (!config.get('jwtPrivateKey')) {
 	console.log('FATAL ERROR: jwtPrivateKey is not defined')
