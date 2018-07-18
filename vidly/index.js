@@ -1,50 +1,20 @@
-require('express-async-errors')
+const express = require('express')
+
+const app = express()
 
 const winston = require('winston')
 
-require('winston-mongodb')
-
-const config = require('config')
-
-const express = require('express')
-
-const Joi = require('joi')
-
-Joi.objectId = require('joi-objectid')(Joi)
-
-const app = express()
+require('./startup/logging')()
 
 require('./startup/routes')(app)
 
 require('./startup/db')()
 
-winston.handleExceptions(new winston.transports.File({
-	filename: 'uncaughtExceptions.log'
-}))
+require('./startup/config')()
 
-process.on('unhandledRejection', (ex) => {
-	throw ex
-})
-
-winston.add(winston.transports.File, { filename: 'logfile.log'})
-
-winston.add(winston.transports.MongoDB, { 
-	db: 'mongodb://localhost/vidly',
-	level: 'info'
-})
-
-if (!config.get('jwtPrivateKey')) {
-	console.log('FATAL ERROR: jwtPrivateKey is not defined')
-	process.exit(1)
-}
-
-
-app.get('/', (req, res) => {
-	return res.send('Genre App')
-})
+require('./startup/validation')()
 
 const port = process.env.PORT || 3000
 
-app.listen(port, () => {
-	console.log(`listening on port ${port}...`)
-})
+app.listen(port, () => winston.info(`listening on port ${port}...`))
+
