@@ -2,6 +2,8 @@ const request = require('supertest')
 
 const { Genre } = require('../../models/genre')
 
+const mongoose = require('mongoose')
+
 let server = null
 
 describe('/api/genres', () => {
@@ -47,6 +49,10 @@ describe('/api/genres', () => {
 		})
 
 		it ('should return a 404 status', async () => {
+
+			const res = await request(server).get(`/api/genres/${mongoose.Types.ObjectId()}`)
+
+			expect(res.status).toBe(404)
 
 		})
 	})
