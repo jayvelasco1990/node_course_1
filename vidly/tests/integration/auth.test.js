@@ -2,20 +2,18 @@ const request = require('supertest')
 
 const { User } = require('../../models/user')
 
-let server = null
-
 describe('auth middleware', () => {
 	
 	beforeEach(() => { server = require('../../index') })
-
-	afterEach(() => server.close())
 	
 	let token;
 
-	const exec = () => {
+	const exec =  () => {
 		return request(server)
+		.post('/api/genres')
 		.set('x-auth-token', token)
-		.post('/api/genres').send({ name: 'genre1' })
+		.send({name: 'genre1'})
+		
 	}
 
 	beforeEach(()=> {

@@ -6,19 +6,18 @@ const { User } = require('../../models/user')
 
 const mongoose = require('mongoose')
 
-let server = null
+let server
 
 describe('/api/genres', () => {
 
 	beforeEach(() => { server = require('../../index') })
-
+	
 	afterEach(async () => { 
-		server.close()
-
 		await Genre.remove({})
 	})
 
 	describe('GET /', () => {
+
 		it ('should return all genres', async () => {
 
 			await Genre.collection.insertMany([
@@ -39,6 +38,7 @@ describe('/api/genres', () => {
 	})
 
 	describe('GET /:id', () => {
+
 		it ('should return genre if valid id is passed', async () => {
 			
 			const newGenre = {name: 'genre1' }
