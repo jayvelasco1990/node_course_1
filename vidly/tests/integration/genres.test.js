@@ -54,6 +54,14 @@ describe('/api/genres', () => {
 
 		it ('should return a 404 status if invalid id is passed', async () => {
 
+			const res = await request(server).get(`/api/genres/1`)
+
+			expect(res.status).toBe(404)
+
+		})
+
+		it ('should return a 404 status if no genre with the given id exists', async () => {
+
 			const res = await request(server).get(`/api/genres/${mongoose.Types.ObjectId()}`)
 
 			expect(res.status).toBe(404)
