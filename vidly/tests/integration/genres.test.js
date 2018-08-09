@@ -16,6 +16,13 @@ describe('/api/genres', () => {
 		await Genre.remove({})
 	})
 
+	const user = { 
+		_id: mongoose.Types.ObjectId().toHexString(), 
+		isAdmin: true 
+	}
+
+	const token = new User(user).generateAuthToken()
+
 	describe('GET /', () => {
 
 		it ('should return all genres', async () => {
@@ -66,6 +73,58 @@ describe('/api/genres', () => {
 
 			expect(res.status).toBe(404)
 
+		})
+	})
+
+	describe('DELETE /:id', () => {
+
+		it ('should delete genre when passed a valid id', async () => {
+			const newGenre = { name: 'genre1' }
+
+			await Genre.collection.insertOne(newGenre)
+
+			const res = await request(server)
+				.delete(`/api/genres/${newGenre._id}`)
+				.set('x-auth-token', token)
+
+			expect(res.status).toBe(200)
+
+			expect(res.body.name).toBe(newGenre.name)
+
+		})
+
+		it ('should return a 404 status if no genre with the given id exists', async() => {
+			const res = await request(server)
+				.delete(`/api/genres/${mongoose.Types.ObjectId()}`)
+				.set('x-auth-token', token)
+
+			expect(res.status).toBe(404)
+		})
+	})
+
+	describe('PUT /:id', () => {
+		it ('should return a 400 status if body is invalid', async () => { 
+			const newGenre = { name: 'genre1' }
+
+			await Genre.collection.insertOne(newGenre)
+
+			const res = await request(server)
+				.put(`/api/genres/${newGenre._id}`)
+				.set('x-auth-token', token)
+
+			expect(res.status).toBe(400)
+
+		})
+
+		it ('should return a 404 status if the genre does not exist', async () => {
+			const genre = { name: 'genre1' }
+
+			const res = await request(server)
+				.put(`/api/genres/${mongoose.Types.ObjectId()}`)
+				.send(genre)
+				.set('x-auth-token', token)
+
+			expect(res.status).toBe(404)
 		})
 	})
 

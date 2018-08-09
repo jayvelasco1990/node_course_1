@@ -24,19 +24,11 @@ router.post('/', auth, async (req, res) => {
 
 	if (error) return res.status(400).send(error.details[0].message)
 
-	try{
-		
-		let genre = new Genre({ name: req.body.name })
+	let genre = new Genre({ name: req.body.name })
 
-		genre = await genre.save()
+	genre = await genre.save()
 
-		res.send(genre)
-	}
-	catch(ex) {
-		for (field in ex.errors) {
-			console.log(ex.errors[field].message)
-		}
-	}
+	res.send(genre)
 
 })
 
@@ -45,7 +37,7 @@ router.put('/:id', auth, async (req, res) => {
 	const { error } = validate(req.body)
 
 	if (error) return res.status(400).send(error.details[0].message)
-	
+
 	const genre = await Genre.findByIdAndUpdate(req.params.id, {
 		$set: {
 			name: req.body.name
