@@ -12,8 +12,10 @@ describe('/api/genres', () => {
 
 	beforeEach(() => { server = require('../../index') })
 	
-	afterEach(async () => { 
+	afterEach(async () => {
 		await Genre.remove({})
+
+		await server.close()
 	})
 
 	const user = { 
