@@ -6,6 +6,8 @@ const mongoose = require('mongoose')
 
 const { User } = require('../../models/user')
 
+const { Movie } = require('../../models/movie')
+
 let server
 
 let customerId
@@ -26,20 +28,29 @@ describe('/api/returns', () => {
 
 		movieId = mongoose.Types.ObjectId()
 
+		const checkoutDate = new Date()
+
+		checkoutDate.setDate(checkoutDate.getDate() - 1)
+
 		rental = new Rental({
 			customer: {
 				_id: customerId,
 				name: '12345',
 				phone: '12345',
 			},
-			movie: {
-				_id: movieId,
-				title: '12345',
-				dailyRentalRate: 2
-			}
+			movie: movieId ,
+			checkoutDate: checkoutDate
 		})
 
 		await rental.save()
+
+		const movie = new Movie({
+			_id: movieId,
+			title: '12345',
+			dailyRentalRate: 2
+		})
+
+		await movie.save()
 
 		token = new User().generateAuthToken()
 
@@ -124,7 +135,11 @@ describe('/api/returns', () => {
 	})
 
 	it ('should calculate the rental fee (numberOfDays * movie.dailyRentalRate)', async () => {
-		
+		const res = await exec()
+
+		const newRental = await Rental.findById(rental._id)
+
+		expect(newRental.rentalFee).toBe(2)
 	})
 })
 
