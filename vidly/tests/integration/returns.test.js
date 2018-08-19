@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const { Rental } = require('../../models/rental')
 
 const request = require('supertest')
@@ -28,18 +30,13 @@ describe('/api/returns', () => {
 
 		movieId = mongoose.Types.ObjectId()
 
-		const checkoutDate = new Date()
-
-		checkoutDate.setDate(checkoutDate.getDate() - 1)
-
 		rental = new Rental({
 			customer: {
 				_id: customerId,
 				name: '12345',
 				phone: '12345',
 			},
-			movie: movieId ,
-			checkoutDate: checkoutDate
+			movie: movieId
 		})
 
 		await rental.save()
@@ -47,7 +44,8 @@ describe('/api/returns', () => {
 		const movie = new Movie({
 			_id: movieId,
 			title: '12345',
-			dailyRentalRate: 2
+			dailyRentalRate: 2,
+			numberInStock: 0
 		})
 
 		await movie.save()
@@ -58,6 +56,8 @@ describe('/api/returns', () => {
 	
 	afterEach(async () => { 
 		await Rental.remove({})
+
+		await Movie.remove({})
 
 		await server.close()
 	})
@@ -135,11 +135,37 @@ describe('/api/returns', () => {
 	})
 
 	it ('should calculate the rental fee (numberOfDays * movie.dailyRentalRate)', async () => {
+
+		rental.checkoutDate = moment().add(-7, 'days').toDate()
+
+		await rental.save()
+
 		const res = await exec()
 
 		const newRental = await Rental.findById(rental._id)
 
-		expect(newRental.rentalFee).toBe(2)
+		expect(newRental.rentalFee).toBe(14)
+	})
+
+	it ('should increase the movie\'s stock', async () => {
+
+		const res = await exec()
+
+		const rentalInDb = await Rental.findById(rental._id).populate('movie')
+
+		expect(rentalInDb.movie.numberInStock).toBe(1)
+	})
+
+	it ('should return rental', async () => {
+		const res = await exec()
+
+		const rentalInDb = await Rental.findById(rental._id)
+
+		expect(Object.keys(res.body)).toEqual(
+			expect.arrayContaining([
+				'checkoutDate', 'returnDate', 'rentalFee', 'customer', 'movie'
+			])
+		)
 	})
 })
 

@@ -15,7 +15,10 @@ const rentalSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Customer'
 	},
-	checkoutDate: Date,
+	checkoutDate: { 
+		type: Date,
+		default: new Date()
+	},
 	returnDate: Date,
 	rentalFee: Number
 })

@@ -1,3 +1,5 @@
+const moment = require('moment')
+
 const express = require('express')
 
 const auth = require('../middleware/auth')
@@ -19,20 +21,18 @@ router.post('/', auth, async (req, res) => {
 	if (rental.returnDate) return res.status(400).send('Rental already processed')
 
 	rental.returnDate = Date.now()
+	
+	const rentalDays = moment().diff(rental.checkoutDate, 'days')
 
-	const oneDay = 24*60*60*1000
-
-	const firstDate = rental.returnDate.getTime()
-
-	const secondDate = rental.checkoutDate.getTime()
-
-	const diffDays = Math.round((firstDate - secondDate) / oneDay)
-
-	rental.rentalFee = diffDays * rental.movie.dailyRentalRate
+	rental.rentalFee =  rentalDays * rental.movie.dailyRentalRate
 
 	await rental.save()
 
-	return res.status(200).send('Valid request')
+	rental.movie.numberInStock++
+
+	await rental.movie.save()
+
+	return res.status(200).send(rental)
 
 })
 
